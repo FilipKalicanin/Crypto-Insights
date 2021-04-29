@@ -3,7 +3,7 @@ export function getData() {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'X-CMC_PRO_API_KEY': '641eab5b-37d7-49d2-aeb5-7af5165398fe'
+            'X-CMC_PRO_API_KEY': ''
         }
     })
         .then((res) => {
