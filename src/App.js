@@ -1,11 +1,14 @@
 import React from 'react';
 import { getData } from './service';
+import Error from './Error';
+import Loading from './Loading';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      response: null
+      requestState: 'loading',
+      data: null
     }
 
     this.fetchData = this.fetchData.bind(this);
@@ -14,9 +17,14 @@ class App extends React.Component {
   fetchData() {
     getData().then(res => {
       return res.data
-    }).then(data => {
+    }).then(newData => {
       this.setState({
-        response: data
+        requestState: 'finishedLoading',
+        data: newData
+      })
+    }).catch(() => {
+      this.setState({
+        requestState: 'error'
       })
     })
   }
@@ -26,29 +34,33 @@ class App extends React.Component {
   }
 
   render() {
-    return (
-      <>
-        {this.state.response === null ?
-          <div>Loading</div> :
-          <table>
-            <tr>
-              <th>Name</th>
-              <th>Symbol</th>
-              <th>Price($USD)</th>
-            </tr>
-            {this.state.response.map((currency) => {
-              return (
-                <tr>
-                  <td>{currency.name}</td>
-                  <td>{currency.symbol}</td>
-                  <td>{currency.quote.USD.price}</td>
-                </tr>
-              )
-            })}
-          </table>
-        }
-      </>
-    )
+    if (this.state.requestState === 'loading') {
+      return <Loading />
+    }
+
+    if (this.state.requestState === 'error') {
+      return <Error />
+    }
+    else {
+      return (
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Symbol</th>
+            <th>Price($USD)</th>
+          </tr>
+          {!this.state.data ? '' : this.state.data.map((currency) => {
+            return (
+              <tr>
+                <td>{currency.name}</td>
+                <td>{currency.symbol}</td>
+                <td>{currency.quote.USD.price}</td>
+              </tr>
+            )
+          })}
+        </table>
+      )
+    }
   }
 }
 export default App;
